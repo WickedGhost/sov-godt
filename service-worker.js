@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sov-godt-v16';
+const CACHE_NAME = 'sov-godt-v17';
 const APP_ASSETS = [
   './',
   './index.html',
