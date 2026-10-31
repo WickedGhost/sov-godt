@@ -4,16 +4,30 @@ En responsiv PWA-prototype for søvndagbok, mønsterinnsikt og behandlingsstøtt
 
 ## Kjør lokalt
 
-Fra prosjektmappen:
+Krever Node.js 22 eller nyere og Python for den lokale HTTP-serveren. Fra prosjektmappen:
 
 ```powershell
-python -m http.server 8000
+npm ci
+npm run build
+python -m http.server 8000 --directory www
 ```
 
-Åpne `http://localhost:8000`. For installasjon på mobil må appen publiseres på en HTTPS-adresse.
+Åpne `http://localhost:8000`.
+
+## Publisering og installasjon som PWA
+
+Workflowen `.github/workflows/deploy-pages.yml` publiserer appen til GitHub Pages når endringer pushes til `main`. Første gang må eieren av repositoryet åpne **Settings → Pages** og velge **GitHub Actions** som publiseringskilde. Etter en vellykket deploy finner du nettadressen under **Actions** eller **Settings → Pages**. Pages-adressen bruker HTTPS, som kreves for installasjon og frakoblet støtte.
 
 - **Android:** Åpne appen i Chrome og velg «Installer app» eller «Legg til på startsiden».
 - **iPhone:** Åpne appen i Safari, trykk Del og velg «Legg til på Hjem-skjerm».
+
+Dette installerer appen fra Pages-nettadressen i nettleseren; det laster ikke ned en Android- eller iOS-app fra GitHub. Appen er offentlig tilgjengelig når den publiseres fra det offentlige repositoryet.
+
+## Senere Capacitor-bygg
+
+`npm run build` lager webappen i `www/`, og `capacitor.config.json` peker Capacitor til denne mappen. Android- og iOS-pakkene er lagt til som prosjektavhengigheter, men native plattformprosjekter, signering og butikkpublisering er ikke satt opp. App-ID-en `no.sovgodt.app` må bekreftes før første native publisering. Android-bygg krever Android Studio; iOS-bygg og signering krever macOS med Xcode.
+
+PWA-en lagrer søvndata i nettleserens lokale lagring. Data sikkerhetskopieres eller synkroniseres ikke, og nettleserlagring overføres ikke automatisk til en senere installert Capacitor-app.
 
 ## Registrering
 
