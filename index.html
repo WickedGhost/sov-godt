@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="no">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#101c33">
+    <meta name="description" content="En rolig søvndagbok og behandlingsstøtte for bedre søvnvaner.">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Sov godt">
+    <title>Sov godt – søvndagbok</title>
+    <link rel="icon" href="app-icon.svg" type="image/svg+xml">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Hovedmeny">
+        <a class="brand" href="#" aria-label="Sov godt, startsiden">
+          <span class="brand-mark" aria-hidden="true">☾</span>
+          <span>Sov godt<span class="brand-caption">DIN SØVNREISE</span></span>
+        </a>
+        <nav class="side-nav">
+          <button class="nav-item active" data-view="home"><span aria-hidden="true">⌂</span>Oversikt</button>
+          <button class="nav-item" data-view="diary"><span aria-hidden="true">▤</span>Søvndagbok</button>
+          <button class="nav-item" data-view="insights"><span aria-hidden="true">◌</span>Innsikt</button>
+          <button class="nav-item" data-view="plan"><span aria-hidden="true">♡</span>Min plan</button>
+        </nav>
+        <div class="sidebar-note">
+          <span class="note-icon" aria-hidden="true">✦</span>
+          <p>Små steg teller.<br><strong>Du er i gang.</strong></p>
+        </div>
+        <p class="sidebar-foot">Et verktøy for søvnvaner<br>– ikke en medisinsk vurdering</p>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div class="mobile-brand"><span class="brand-mark" aria-hidden="true">☾</span>Sov godt</div>
+          <span class="topbar-date" id="today-label"></span>
+          <button class="quick-log" data-open-log aria-label="Registrer natt">＋</button>
+          <button class="avatar" aria-label="Profil">E</button>
+        </header>
+
+        <section class="view active" id="view-home" aria-labelledby="greeting">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">DIN SØVNREISE</p>
+              <h1 id="greeting">God morgen <span aria-hidden="true">☀</span></h1>
+              <p class="subheading">En ny dag, en ny mulighet til å finne rytmen din.</p>
+            </div>
+            <button class="button button-primary desktop-log" data-open-log>＋ Registrer natt</button>
+          </div>
+
+          <div class="hero-card">
+            <div class="hero-copy">
+              <span class="hero-kicker"><span class="status-dot"></span><span id="hero-kicker-text">EKSEMPELDATA · DEMOVISNING</span></span>
+              <h2>Du har sovet<br><strong id="hero-duration">7 t 12 min</strong></h2>
+              <p id="hero-caption">Fiktive tall for å vise hvordan søvnoversikten kan se ut.</p>
+              <button class="text-button" data-view-link="diary">Se søvndagboken <span aria-hidden="true">→</span></button>
+            </div>
+            <div class="moon-art" aria-hidden="true">
+              <div class="moon"></div><span class="star star-one">✦</span><span class="star star-two">·</span><span class="star star-three">✧</span>
+              <span class="orbit orbit-one"></span><span class="orbit orbit-two"></span>
+            </div>
+            <div class="hero-meta"><span>✦</span> En liten innsjekk er nok for i dag</div>
+          </div>
+
+          <section class="panel treatment-choice" id="treatment-choice" aria-labelledby="treatment-choice-title">
+            <div><p class="eyebrow">TILPASSET DIN BEHANDLING</p><h2 id="treatment-choice-title">Hva får du behandling for?</h2><p id="treatment-summary">Velg ett eller begge områder. Du kan endre valget senere.</p></div>
+            <button class="button button-secondary" data-open-treatment>Velg behandling</button>
+          </section>
+
+          <section class="panel quick-log-panel" aria-labelledby="quick-log-title">
+            <div class="quick-log-heading"><div><p class="eyebrow">REGISTRER MED ETT TRYKK</p><h2 id="quick-log-title">Hva skjer nå?</h2><p>Klokkeslettet lagres automatisk.</p></div><span class="live-time" id="live-time"></span></div>
+            <div class="quick-actions">
+              <button class="quick-action action-bed" id="log-bed"><span aria-hidden="true">☾</span><strong>I seng</strong></button>
+              <button class="quick-action action-wake" id="log-wake"><span aria-hidden="true">☀</span><strong>Stått opp</strong></button>
+              <button class="quick-action action-coffee" id="log-coffee" data-treatment="insomnia"><span aria-hidden="true">☕</span><strong>Drukket kaffe</strong></button>
+              <button class="quick-action action-alcohol" id="log-alcohol" data-treatment="insomnia"><span aria-hidden="true">◇</span><strong>Drukket alkohol</strong></button>
+              <button class="quick-action action-light" id="log-light-start" data-treatment="delayed-phase"><span aria-hidden="true">☀</span><strong>Start lys</strong></button>
+              <button class="quick-action action-light-stop" id="log-light-stop" data-treatment="delayed-phase" disabled><span aria-hidden="true">◷</span><strong>Stopp lys</strong></button>
+            </div>
+            <div class="active-night" id="active-night" hidden></div>
+            <div class="recent-events" id="recent-events" hidden></div>
+          </section>
+
+          <section class="panel draft-card" id="draft-card" aria-labelledby="draft-title" hidden>
+            <div class="draft-copy"><span class="draft-icon" aria-hidden="true">▤</span><div><p class="eyebrow" id="draft-status">NATTUTKAST</p><h2 id="draft-title">Natten er klar til ferdigstilling</h2><p id="draft-description"></p></div></div>
+            <button class="button button-primary" id="finish-draft">Ferdigstill natt →</button>
+          </section>
+
+          <div class="section-title">
+            <div><h2>Søvnen din</h2><p>Et overblikk over de siste nettene</p></div>
+            <label class="period-select">Periode
+              <select id="home-period" aria-label="Velg periode for søvnoversikten">
+                <option value="7">7 dager</option><option value="14">14 dager</option><option value="30">30 dager</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="metric-grid">
+            <article class="metric-card">
+              <div class="metric-top"><span class="metric-icon lavender">◷</span><span class="trend neutral" id="sleep-trend">–</span></div>
+              <p class="metric-label">Gjennomsnittlig søvn</p><strong id="average-sleep">6 t 48 min</strong><span class="metric-hint">per natt · valgt periode</span>
+            </article>
+            <article class="metric-card">
+              <div class="metric-top"><span class="metric-icon aqua">◉</span><span class="trend neutral" id="efficiency-trend">–</span></div>
+              <p class="metric-label">Søvneffektivitet</p><strong id="average-efficiency">84 %</strong><span class="metric-hint">søvn i forhold til tid i seng</span>
+            </article>
+            <article class="metric-card">
+              <div class="metric-top"><span class="metric-icon peach">↗</span><span class="trend neutral" id="wake-trend">–</span></div>
+              <p class="metric-label">Oppståtid</p><strong id="wake-average">07:24</strong><span class="metric-hint">gjennomsnitt · valgt periode</span>
+            </article>
+            <article class="metric-card">
+              <div class="metric-top"><span class="metric-icon blue">◌</span><span class="trend neutral">WASO</span></div>
+              <p class="metric-label">Våken etter innsovning</p><strong id="average-waso">–</strong><span class="metric-hint">gjennomsnitt · valgt periode</span>
+            </article>
+          </div>
+
+          <div class="content-grid">
+            <article class="panel chart-panel">
+              <div class="panel-heading"><div><h2>Søvn over tid</h2><p>Timer sovet per natt</p></div><span class="legend"><i></i> Søvntid</span></div>
+              <div id="sleep-chart" class="chart-wrap" role="img" aria-label="Søvntid de siste nettene"></div>
+              <div class="chart-axis"><span id="chart-range-start">–</span><span id="chart-range-end">–</span></div>
+            </article>
+            <article class="panel consistency-panel">
+              <div class="panel-heading"><div><h2>Døgnrytmekonsistens</h2><p>Variasjon i oppståtid</p></div><span class="tiny-info" title="Viser standardavvik i oppståtid.">i</span></div>
+              <div class="rhythm-score"><div class="score-ring"><strong id="consistency-score">± –</strong><span>min</span></div><div><strong id="consistency-title">Logg flere netter</strong><p id="consistency-copy">Etter noen netter kan vi vise variasjonen i oppståtiden.</p></div></div>
+              <div class="weekday-delta"><span>Helg vs. hverdag</span><strong id="weekend-delta">+ 42 min</strong></div>
+            </article>
+          </div>
+
+          <div class="bottom-grid">
+            <article class="panel checkin-panel">
+              <div class="checkin-icon" aria-hidden="true">☾</div>
+              <div><h2>Hvordan var natten?</h2><p>Et par detaljer gjør mønstrene lettere å se.</p></div>
+              <button class="button button-primary" data-open-log>Registrer søvn <span aria-hidden="true">→</span></button>
+            </article>
+            <article class="panel goal-panel">
+              <div class="panel-heading"><div><h2>Dagbokrutine</h2><p>Registreringer siste 7 dager</p></div><span class="goal-badge" id="log-count">0 av 7</span></div>
+              <div class="goal-progress"><span></span></div>
+              <p class="goal-copy">Netter registrert denne uken.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="view-diary" aria-labelledby="diary-title">
+          <div class="page-heading">
+            <div><p class="eyebrow">DINE REGISTRERINGER</p><h1 id="diary-title">Søvndagbok</h1><p class="subheading">Se nettene dine samlet, uten å dømme dem.</p></div>
+            <button class="button button-primary desktop-log" data-open-log>＋ Registrer natt</button>
+          </div>
+          <article class="panel diary-summary">
+            <div><span class="metric-icon lavender">▤</span><h2>Daglig oversikt</h2><p>Registreringer lagres privat på denne enheten.</p></div>
+            <label class="period-select">Vis
+              <select id="diary-period" aria-label="Velg periode for dagboken">
+                <option value="7">Siste 7 dager</option><option value="14">Siste 14 dager</option><option value="30">Siste 30 dager</option>
+              </select>
+            </label>
+          </article>
+          <div class="table-wrap panel">
+            <table><thead><tr><th>Dato</th><th>La meg</th><th>Sovnet</th><th>Sto opp</th><th>Søvn</th><th>Effektivitet</th><th>Kvalitet</th><th>Behandlingsprofil</th><th>Hendelser</th></tr></thead><tbody id="diary-rows"></tbody></table>
+            <div class="empty-state" id="diary-empty" hidden><span>☾</span><h2>Dagboken starter her</h2><p>Registrer en natt for å se søvnmønstrene dine over tid.</p><button class="button button-primary" data-open-log>Registrer første natt</button></div>
+          </div>
+          <p class="privacy-note"><span aria-hidden="true">▣</span> Dataene dine lagres lokalt i nettleseren. De deles ikke med klinikken fra denne prototypen.</p>
+        </section>
+
+        <section class="view" id="view-insights" aria-labelledby="insights-title">
+          <div class="page-heading"><div><p class="eyebrow">MØNSTRE, IKKE DIAGNOSER</p><h1 id="insights-title">Innsikt</h1><p class="subheading">Nysgjerrige observasjoner basert på søvndagboken din.</p></div></div>
+          <div class="insight-callout"><span aria-hidden="true">✦</span><div><strong>Se etter mønstre over tid</strong><p>I denne prototypen beregnes innsiktene lokalt med enkle regler, ikke med en ekstern AI. Sammenhenger er ikke bevis på årsak; ta gjerne observasjonene med til behandleren din.</p></div></div>
+          <div class="insight-grid">
+            <article class="panel insight-card"><span class="insight-icon lavender">☕</span><p class="eyebrow">KOFFEIN</p><h2 id="caffeine-insight">Slik ser det ut hos deg</h2><p id="caffeine-copy">Registrer noen flere dager for å se om koffein henger sammen med innsovningstiden din.</p><div class="mini-chart" id="caffeine-chart" aria-hidden="true"></div></article>
+            <article class="panel insight-card"><span class="insight-icon peach">◇</span><p class="eyebrow">ALKOHOL</p><h2 id="alcohol-insight">Slik ser det ut hos deg</h2><p id="alcohol-copy">Registrer noen flere dager for å sammenligne søvnen på netter med og uten alkohol.</p><div class="comparison-chart" id="alcohol-chart" aria-hidden="true"></div></article>
+            <article class="panel insight-card"><span class="insight-icon peach">◷</span><p class="eyebrow">DØGNRYTME</p><h2 id="rhythm-insight">Små skift er helt normalt</h2><p id="rhythm-copy">En jevn oppståtid kan være et nyttig holdepunkt. Se utviklingen sammen med behandleren din.</p><div class="insight-stat"><span>Avvik helg / hverdag</span><strong id="insight-weekend-delta">+ 42 min</strong></div></article>
+            <article class="panel insight-card"><span class="insight-icon aqua">☀</span><p class="eyebrow">LYSBEHANDLING</p><h2>Rutine fremfor perfeksjon</h2><p>Du har registrert lysbehandling <strong id="light-count">0 dager</strong> den siste uken. Følg tidspunkt og dose avtalt med behandleren din.</p><div class="insight-stat"><span>Siste 7 dager</span><strong id="light-minutes">0 min</strong></div></article>
+            <article class="panel insight-card"><span class="insight-icon blue">♡</span><p class="eyebrow">SØVNHYGIENE</p><h2>Legg merke til rutinene</h2><p id="hygiene-copy">Registrer dagsøvn og kveldsrutiner for å se om noe går igjen. Det finnes ingen perfekt natt.</p><button class="text-button" data-view-link="plan">Se stimuluskontroll <span aria-hidden="true">→</span></button></article>
+          </div>
+          <article class="panel trend-panel"><div class="panel-heading"><div><h2>Innsovningstid</h2><p>Minutter fra lys av til du sovner</p></div><span class="legend"><i class="legend-mint"></i> Minutter</span></div><div id="latency-chart" class="chart-wrap" role="img" aria-label="Innsovningstid over tid"></div></article>
+          <p class="disclaimer">Innsikten er veiledende og erstatter ikke medisinsk vurdering. Appen stiller ikke diagnoser eller endrer behandlingsplaner.</p>
+        </section>
+
+        <section class="view" id="view-plan" aria-labelledby="plan-title">
+          <div class="page-heading"><div><p class="eyebrow">AVTALT MED BEHANDLER</p><h1 id="plan-title">Min plan</h1><p class="subheading">Støtte til planen din – tilpasset sammen med klinikken.</p></div><span class="plan-status"><i></i> Aktiv plan</span></div>
+          <section class="panel treatment-settings">
+            <div><p class="eyebrow">TILPASSET DIN BEHANDLING</p><h2>Behandlingsområde</h2><p id="plan-treatment-summary">Velg hva du får behandling for, slik at nattregistreringen viser relevante spørsmål.</p></div>
+            <button class="button button-secondary" data-open-treatment>Endre valg</button>
+          </section>
+          <section class="panel treatment-settings clock-format-settings" aria-labelledby="clock-format-title">
+            <div><p class="eyebrow">VISNINGSVALG</p><h2 id="clock-format-title">Klokkeformat</h2><p>Velg hvordan klokkeslett vises i appen.</p></div>
+            <label class="period-select" for="clock-format"><span>Klokkeformat</span><select id="clock-format" aria-label="Velg klokkeformat"><option value="24">24-timers klokke</option><option value="12">12-timers klokke</option></select></label>
+          </section>
+          <article class="plan-hero panel"><span class="plan-sparkle" aria-hidden="true">✦</span><div><p class="eyebrow">DENNE UKEN</p><h2>Bygg rytme, ett steg av gangen</h2><p>Bruk planen du har avtalt med behandleren. Ikke gjør endringer i søvnvindu, lys eller melatonin basert på appen alene.</p></div></article>
+          <div class="plan-grid">
+            <article class="panel plan-card"><div class="plan-card-top"><span class="metric-icon lavender">◷</span><span class="plan-tag">KLINIKKAVTALT</span></div><h2>Søvnvindu</h2><p>Følg tidene du har avtalt med behandleren din.</p><div class="plan-time"><span>Leggetid</span><strong id="sleep-window-bedtime">– – : – –</strong></div><div class="plan-time"><span>Oppståtid</span><strong id="sleep-window-wake-time">– – : – –</strong></div><button class="text-button" id="edit-sleep-window" type="button" aria-expanded="false">Rediger søvnvindu</button><form class="sleep-window-form" id="sleep-window-form" hidden><div class="sleep-window-fields"><label>Leggetid<input id="sleep-window-bedtime-input" name="bedtime" type="time" required></label><label>Oppståtid<input id="sleep-window-wake-time-input" name="wakeTime" type="time" required></label></div><p class="form-error" id="sleep-window-error" role="alert" hidden></p><div class="sleep-window-actions"><button class="button button-secondary" id="cancel-sleep-window" type="button">Avbryt</button><button class="button button-primary" type="submit">Lagre tider</button></div></form><p class="card-footnote">Registrer tidene du har avtalt med behandleren. Appen endrer ikke behandlingsplanen.</p></article>
+            <article class="panel plan-card"><div class="plan-card-top"><span class="metric-icon aqua">☾</span><span class="plan-tag">STIMULUSKONTROLL</span></div><h2>Sengen er for søvn</h2><p>En vennlig påminnelse – ikke en regel du må prestere på.</p><ul class="check-list"><li>Gå til sengs når du kjenner deg søvnig.</li><li>Hvis du blir lenge våken, stå opp og gjør noe rolig i dempet lys.</li><li>Gå tilbake når søvnigheten kommer.</li></ul></article>
+            <article class="panel plan-card"><div class="plan-card-top"><span class="metric-icon peach">☀</span><span class="plan-tag">DØGNRYTME</span></div><h2>Lys og rytme</h2><p>Følg tidspunkt for lysbehandling som er avtalt med behandleren.</p><button class="reminder-button" id="light-reminder"><span>☀</span><span><strong>Påminnelse om lys</strong><small id="reminder-status">Ikke aktivert</small></span><span class="toggle" aria-hidden="true"><i></i></span></button></article>
+            <article class="panel plan-card"><div class="plan-card-top"><span class="metric-icon blue">✧</span><span class="plan-tag">PÅMINNELSER</span></div><h2>Melatonin</h2><p>Bruk kun etter avtale om tidspunkt og dose med helsepersonell.</p><button class="reminder-button" id="melatonin-reminder"><span>✧</span><span><strong>Påminnelse om melatonin</strong><small id="melatonin-status">Ikke aktivert</small></span><span class="toggle" aria-hidden="true"><i></i></span></button><p class="card-footnote">Tidspunktet må avtales med behandler. Varsler vises bare når appen er åpen.</p></article>
+          </div>
+          <article class="panel goal-edit"><div><span class="eyebrow">MITT BEHANDLINGSMÅL</span><h2 id="goal-text">Stå opp omtrent samme tid hver dag.</h2><p>Et lite, realistisk mål er lettere å holde fast ved.</p></div><button class="button button-secondary" id="edit-goal">Endre mål</button></article>
+          <article class="clinical-export panel"><div><span class="export-icon">▤</span><div><h2>Ta med dagboken til klinikken</h2><p>Lag en utskriftsvennlig rapport eller eksporter dataene.</p></div></div><div class="export-actions"><button class="button button-secondary" id="export-report">Lagre som PDF</button><button class="text-button" id="export-csv">Eksporter CSV</button></div></article>
+          <p class="disclaimer">Søvnrestriksjon, lysbehandling og melatonin bør planlegges med kvalifisert helsepersonell. Appen foreslår ikke dose eller behandlingsendringer.</p>
+        </section>
+
+        <footer class="app-footer">Laget for roligere netter <span aria-hidden="true">✦</span> All data forblir på enheten din</footer>
+      </main>
+      <nav class="bottom-nav" aria-label="Hovedmeny">
+        <button class="bottom-item active" data-view="home"><span aria-hidden="true">⌂</span><small>Oversikt</small></button>
+        <button class="bottom-item" data-view="diary"><span aria-hidden="true">▤</span><small>Dagbok</small></button>
+        <button class="bottom-item" data-view="insights"><span aria-hidden="true">◌</span><small>Innsikt</small></button>
+        <button class="bottom-item" data-view="plan"><span aria-hidden="true">♡</span><small>Min plan</small></button>
+      </nav>
+    </div>
+
+    <dialog id="log-dialog" class="log-dialog" aria-labelledby="log-title">
+      <form id="sleep-form" method="dialog">
+        <div class="dialog-heading"><div><p class="eyebrow">SØVNDAGBOK</p><h2 id="log-title">Ferdigstill natten</h2><p>Det du allerede har registrert, er fylt inn.</p></div><button type="button" class="close-button" data-close-log aria-label="Lukk">×</button></div>
+        <div class="event-review" id="event-review"></div>
+        <div class="form-grid">
+          <label class="form-common">Dato for oppståing<input name="date" type="date" required></label>
+          <label class="form-common">La meg i sengen<input name="bedtime" type="time" required></label>
+          <label class="form-common">Sto opp<input name="riseTime" type="time" required></label>
+          <label class="form-insomnia">Lys av<input name="lightsOut" type="time"></label>
+          <label class="form-common">Sovnet<input name="sleepOnset" type="time" required></label>
+          <label class="form-insomnia">Oppvåkninger<input name="awakenings" type="number" min="0" max="30" value="0" inputmode="numeric"></label>
+          <label class="form-insomnia">Våken totalt om natten (min)<input name="awakeMinutes" type="number" min="0" max="720" value="0" inputmode="numeric"></label>
+          <label class="form-insomnia">Siste oppvåkning<input name="finalWake" type="time"></label>
+          <label class="form-insomnia">Søvnkvalitet<select name="quality"><option value="">Velg</option><option value="1">1 – svært dårlig</option><option value="2">2 – dårlig</option><option value="3">3 – middels</option><option value="4">4 – god</option><option value="5">5 – svært god</option></select></label>
+          <label class="form-insomnia">Energi i dag<select name="energy"><option value="">Velg</option><option value="1">1 – svært lav</option><option value="2">2 – lav</option><option value="3">3 – middels</option><option value="4">4 – god</option><option value="5">5 – svært god</option></select></label>
+          <label class="form-insomnia">Sovemedisin<input name="medication" type="text" placeholder="Valgfritt"></label>
+          <label class="form-insomnia">Dagsøvn (min)<input name="nap" type="number" min="0" max="720" value="0" inputmode="numeric"></label>
+          <label class="form-common">Melatonin (mg)<input name="melatonin" type="number" min="0" max="100" step="0.1" value="0" inputmode="decimal"></label>
+          <label class="form-delayed">Melatonin tidspunkt<input name="melatoninTime" type="time"></label>
+        </div>
+        <p class="profile-hint" id="profile-hint" hidden></p>
+        <p class="form-error" id="form-error" role="alert" hidden></p>
+        <div class="dialog-actions"><button type="button" class="button button-secondary" data-close-log>Senere</button><button type="submit" class="button button-primary">Lagre natt</button></div>
+      </form>
+    </dialog>
+    <dialog id="treatment-dialog" class="log-dialog goal-dialog" aria-labelledby="treatment-dialog-title">
+      <form id="treatment-form" method="dialog">
+        <div class="dialog-heading"><div><p class="eyebrow">DIN BEHANDLING</p><h2 id="treatment-dialog-title">Hva får du behandling for?</h2><p>Velg ett eller begge. Dette tilpasser dagboken – det er ikke en diagnose.</p></div><button type="button" class="close-button" data-close-treatment aria-label="Lukk">×</button></div>
+        <fieldset class="treatment-options">
+          <legend>Behandlingsområde</legend>
+          <label><input type="checkbox" name="treatment" value="insomnia"><span><strong>Insomni</strong><small>Spørsmål om innsovning, oppvåkninger og søvnkvalitet</small></span></label>
+          <label><input type="checkbox" name="treatment" value="delayed-phase"><span><strong>Forsinket søvnfase</strong><small>Fokus på døgnrytme, lysbehandling og melatonin</small></span></label>
+        </fieldset>
+        <p class="form-error" id="treatment-error" role="alert" hidden>Velg minst ett behandlingsområde.</p>
+        <div class="dialog-actions"><button type="button" class="button button-secondary" data-close-treatment>Avbryt</button><button type="submit" class="button button-primary">Lagre valg</button></div>
+      </form>
+    </dialog>
+    <dialog id="intake-dialog" class="log-dialog goal-dialog" aria-labelledby="intake-title">
+      <form id="intake-form" method="dialog">
+        <div class="dialog-heading"><div><p class="eyebrow">VALGFRITT</p><h2 id="intake-title">Legg til mengde</h2><p id="intake-description">Hendelsen og tidspunktet er allerede registrert.</p></div><button type="button" class="close-button" data-close-intake aria-label="Lukk">×</button></div>
+        <label class="goal-label" id="intake-label" for="intake-amount">Omtrentlig mengde</label>
+        <input id="intake-amount" name="amount" type="number" min="0" step="any" inputmode="decimal">
+        <p class="card-footnote" id="intake-hint" hidden></p>
+        <div class="dialog-actions"><button type="button" class="button button-secondary" data-close-intake>Hopp over</button><button type="submit" class="button button-primary">Lagre mengde</button></div>
+      </form>
+    </dialog>
+    <dialog id="goal-dialog" class="log-dialog goal-dialog" aria-labelledby="goal-dialog-title">
+      <form id="goal-form" method="dialog">
+        <div class="dialog-heading"><div><p class="eyebrow">MITT BEHANDLINGSMÅL</p><h2 id="goal-dialog-title">Velg et lite steg</h2><p>Et realistisk mål kan være lettere å holde fast ved.</p></div><button type="button" class="close-button" data-close-goal aria-label="Lukk">×</button></div>
+        <label class="goal-label" for="goal-input">Målet mitt</label>
+        <input id="goal-input" name="goal" maxlength="120" required>
+        <div class="dialog-actions"><button type="button" class="button button-secondary" data-close-goal>Avbryt</button><button type="submit" class="button button-primary">Lagre mål</button></div>
+      </form>
+    </dialog>
+    <dialog id="reminder-dialog" class="log-dialog goal-dialog" aria-labelledby="reminder-title">
+      <form id="reminder-form" method="dialog">
+        <div class="dialog-heading"><div><p class="eyebrow">AVTALT MED BEHANDLER</p><h2 id="reminder-title">Still inn påminnelse</h2><p id="reminder-description">Bruk tidspunktet du har avtalt med behandleren din.</p></div><button type="button" class="close-button" data-close-reminder aria-label="Lukk">×</button></div>
+        <label class="goal-label" for="reminder-time">Avtalt klokkeslett</label>
+        <input id="reminder-time" name="time" type="time" required>
+        <div class="dialog-actions"><button type="button" class="button button-secondary" data-close-reminder>Avbryt</button><button type="submit" class="button button-primary">Lagre påminnelse</button></div>
+      </form>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
