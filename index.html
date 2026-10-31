@@ -23,6 +23,7 @@
         <nav class="side-nav">
           <button class="nav-item active" data-view="home"><span aria-hidden="true">⌂</span>Oversikt</button>
           <button class="nav-item" data-view="diary"><span aria-hidden="true">▤</span>Søvndagbok</button>
+          <button class="nav-item" data-view="assessment"><span aria-hidden="true">▧</span>Kartlegging</button>
           <button class="nav-item" data-view="insights"><span aria-hidden="true">◌</span>Innsikt</button>
           <button class="nav-item" data-view="plan"><span aria-hidden="true">♡</span>Min plan</button>
         </nav>
@@ -164,6 +165,31 @@
           <p class="privacy-note"><span aria-hidden="true">▣</span> Dataene dine lagres lokalt i nettleseren. De deles ikke med klinikken fra denne prototypen.</p>
         </section>
 
+        <section class="view" id="view-assessment" aria-labelledby="assessment-title">
+          <div class="page-heading">
+            <div><p class="eyebrow">DIN EGEN BESKRIVELSE</p><h1 id="assessment-title">Kartlegging</h1><p class="subheading">Et frivillig skjema om søvn og forhold som kan påvirke den.</p></div>
+          </div>
+          <div class="assessment-notice" id="assessment-privacy">
+            <strong>Før du begynner</strong>
+            <p>Alle felt er valgfrie. Svarene kan inneholde sensitive helseopplysninger, men lagres bare lokalt i denne nettleseren. Lagringen er ikke kryptert eller beskyttet med egen kode; andre med tilgang til enheten eller nettleseren kan få tilgang til svarene. Ikke skriv navn eller kontaktopplysninger. Ingenting sendes automatisk til behandleren eller en server.</p>
+            <p>Dette er et egenutviklet refleksjonsskjema, ikke originalskjemaet eller en validert test. Det stiller ikke diagnose og gir ikke behandlingsråd.</p>
+          </div>
+          <div class="assessment-toolbar">
+            <div class="assessment-progress" role="status" aria-live="polite">
+              <div><strong id="assessment-progress-label">0 felt fylt ut</strong><span id="assessment-save-status">Ikke startet</span></div>
+              <div class="assessment-progress-track" role="progressbar" aria-label="Utfylte kartleggingsfelt" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="assessment-progress-bar"></span></div>
+            </div>
+            <div class="assessment-actions">
+              <button class="button button-secondary" type="button" id="export-assessment" disabled>Eksporter svar (JSON)</button>
+              <button class="text-button" type="button" id="clear-assessment" disabled>Slett svar</button>
+            </div>
+          </div>
+          <form id="assessment-form" aria-describedby="assessment-privacy" novalidate>
+            <div id="assessment-questions"></div>
+          </form>
+          <p class="privacy-note"><span aria-hidden="true">▣</span> Du kan når som helst eksportere eller slette kartleggingssvarene fra denne enheten.</p>
+        </section>
+
         <section class="view" id="view-insights" aria-labelledby="insights-title">
           <div class="page-heading"><div><p class="eyebrow">MØNSTRE, IKKE DIAGNOSER</p><h1 id="insights-title">Innsikt</h1><p class="subheading">Nysgjerrige observasjoner basert på søvndagboken din.</p></div></div>
           <div class="insight-callout"><span aria-hidden="true">✦</span><div><strong>Se etter mønstre over tid</strong><p>I denne prototypen beregnes innsiktene lokalt med enkle regler, ikke med en ekstern AI. Sammenhenger er ikke bevis på årsak; ta gjerne observasjonene med til behandleren din.</p></div></div>
@@ -174,6 +200,11 @@
             <article class="panel insight-card"><span class="insight-icon aqua">☀</span><p class="eyebrow">LYSBEHANDLING</p><h2>Rutine fremfor perfeksjon</h2><p>Du har registrert lysbehandling <strong id="light-count">0 dager</strong> den siste uken. Følg tidspunkt og dose avtalt med behandleren din.</p><div class="insight-stat"><span>Siste 7 dager</span><strong id="light-minutes">0 min</strong></div></article>
             <article class="panel insight-card"><span class="insight-icon blue">♡</span><p class="eyebrow">SØVNHYGIENE</p><h2>Legg merke til rutinene</h2><p id="hygiene-copy">Registrer dagsøvn og kveldsrutiner for å se om noe går igjen. Det finnes ingen perfekt natt.</p><button class="text-button" data-view-link="plan">Se stimuluskontroll <span aria-hidden="true">→</span></button></article>
           </div>
+          <section class="panel assessment-insight" aria-labelledby="assessment-insight-title">
+            <div class="panel-heading"><div><h2 id="assessment-insight-title">Kartlegging × søvndagbok</h2><p>Sammenholder egne anslag med registrerte netter – bare når det finnes nok data.</p></div><button class="text-button" type="button" data-view-link="assessment">Åpne kartlegging <span aria-hidden="true">→</span></button></div>
+            <div id="assessment-insight-summary"></div>
+            <p class="assessment-insight-disclaimer">Dette er en enkel sammenligning av to personlige datakilder, ikke en validert vurdering. «Sammenfaller grovt» bygger på faste, veiledende avviksgrenser – ikke kliniske grenseverdier. Likheter eller forskjeller viser ikke årsak eller diagnose. Kartleggingen beskriver hvordan du opplever søvnen, mens dagboken bare omfatter nettene du har registrert.</p>
+          </section>
           <article class="panel trend-panel"><div class="panel-heading"><div><h2>Innsovningstid</h2><p>Minutter fra lys av til du sovner</p></div><span class="legend"><i class="legend-mint"></i> Minutter</span></div><div id="latency-chart" class="chart-wrap" role="img" aria-label="Innsovningstid over tid"></div></article>
           <p class="disclaimer">Innsikten er veiledende og erstatter ikke medisinsk vurdering. Appen stiller ikke diagnoser eller endrer behandlingsplaner.</p>
         </section>
@@ -205,6 +236,7 @@
       <nav class="bottom-nav" aria-label="Hovedmeny">
         <button class="bottom-item active" data-view="home"><span aria-hidden="true">⌂</span><small>Oversikt</small></button>
         <button class="bottom-item" data-view="diary"><span aria-hidden="true">▤</span><small>Dagbok</small></button>
+        <button class="bottom-item" data-view="assessment"><span aria-hidden="true">▧</span><small>Kartlegging</small></button>
         <button class="bottom-item" data-view="insights"><span aria-hidden="true">◌</span><small>Innsikt</small></button>
         <button class="bottom-item" data-view="plan"><span aria-hidden="true">♡</span><small>Min plan</small></button>
       </nav>

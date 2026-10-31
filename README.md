@@ -31,6 +31,8 @@ PWA-en lagrer søvndata i nettleserens lokale lagring. Data sikkerhetskopieres e
 
 ## Registrering
 
+- Under **Kartlegging** kan brukeren fylle ut et kort, frivillig skjema med egen ordlyd om søvn, vaner, hverdag, helse og livssituasjon. Svar lagres lokalt, kan slettes og kan eksporteres som JSON for videre analyse. Innsiktssiden sammenholder besvarte tall-/skalasvar om innsovning, oppvåkninger, søvnlengde, ukedagsrytme og søvnighet med relevante faktiske dagbokregistreringer fra de siste 30 dagene. Sammenligninger krever minst tre relevante netter, og demo-/eksempeldata utelates. «Sammenfaller grovt» og «avviker» bygger på faste, veiledende avviksgrenser som ikke er kliniske grenseverdier. Fritekst og sensitive helseopplysninger vises ikke i innsikten.
+- Kartleggingen er ikke en digital kopi av vedlagte «Insomnia Interview Schedule», en validert test eller et diagnoseverktøy. Alle felt er valgfrie. Unngå navn og andre direkte identifikatorer. Lokal nettleserlagring er ikke kryptert eller passordbeskyttet, og JSON-eksporten kan inneholde sensitive helseopplysninger.
 - Velg insomni, forsinket søvnfase eller begge under «Min plan». Valget tilpasser dagbokens spørsmål; det er ikke en diagnose.
 - «I seng» starter et lokalt nattutkast. Kaffe, alkohol og lysbehandling kan stemples med ett trykk. Kaffe registreres i kopp-ekvivalenter (én kopp er satt til 80 mg koffein som standard), mens alkoholenheter kan legges til valgfritt.
 - «Stått opp» avslutter nattutkastet. Åpne utkastet fra oversikten neste morgen for å kontrollere hendelser og fylle inn behandlingsrelevante søvndetaljer. «Lys av» og «Sovnet» fylles først med registrert leggetid, og «Siste oppvåkning» med registrert oppståtid; tidene kan endres før lagring.

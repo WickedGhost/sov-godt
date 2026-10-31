@@ -1,6 +1,102 @@
 const STORAGE_KEY = 'sov-godt-sleep-log-v1';
 const SETTINGS_KEY = 'sov-godt-settings-v1';
 const ACTIVITY_KEY = 'sov-godt-night-activity-v1';
+const ASSESSMENT_KEY = 'sov-godt-assessment-v1';
+const ASSESSMENT_SECTIONS = [
+  {
+    title: 'Søvn og døgnrytme',
+    description: 'Beskriv hvordan søvnen din oppleves for tiden. Skalaene er kun til egen refleksjon.',
+    fields: [
+      { key: 'fallingAsleepDifficulty', label: 'Hvor krevende oppleves det å sovne?', type: 'rating', sensitive: false },
+      { key: 'nightWakingDifficulty', label: 'Hvor krevende oppleves avbrudd i nattesøvnen?', type: 'rating', sensitive: false },
+      { key: 'earlyWakingDifficulty', label: 'I hvilken grad påvirker det deg å våkne tidligere enn ønsket?', type: 'rating', sensitive: false },
+      { key: 'daytimeSleepiness', label: 'Hvor mye søvnighet merker du på dagtid?', type: 'rating', sensitive: false },
+      { key: 'difficultNights', label: 'Hvor mange netter i en vanlig uke er søvnen vanskelig?', type: 'number', min: 0, max: 7, unit: 'netter per uke', sensitive: false },
+      { key: 'sleepLatency', label: 'Omtrent hvor lang tid bruker du vanligvis på å sovne?', type: 'number', min: 0, max: 360, unit: 'minutter', sensitive: false },
+      { key: 'nightWakingCount', label: 'Hvor mange ganger våkner du vanligvis i løpet av natten?', type: 'number', min: 0, max: 30, unit: 'ganger', sensitive: false },
+      { key: 'nightAwakeMinutes', label: 'Omtrent hvor lenge er du våken til sammen i løpet av natten?', type: 'number', min: 0, max: 720, unit: 'minutter', sensitive: false },
+      { key: 'sleepDurationHours', label: 'Hvor mange timer søvn får du vanligvis per natt?', type: 'number', min: 0, max: 18, step: 0.25, unit: 'timer', sensitive: false },
+      { key: 'weekdayBedtime', label: 'Når prøver du vanligvis å legge deg på hverdager?', type: 'time', sensitive: false },
+      { key: 'weekdayWakeTime', label: 'Når starter dagen din vanligvis på hverdager?', type: 'time', sensitive: false },
+      {
+        key: 'weekendRhythm',
+        label: 'Hvordan er søvnrytmen i helgene sammenlignet med hverdagene?',
+        type: 'select',
+        choices: [['similar', 'Omtrent lik'], ['somewhat-different', 'Litt forskjellig'], ['very-different', 'Mye forskjellig']],
+        sensitive: false,
+      },
+      { key: 'napDays', label: 'Hvor mange dager i uken sover eller blunder du på dagtid?', type: 'number', min: 0, max: 7, unit: 'dager per uke', sensitive: false },
+      { key: 'sleepHistory', label: 'Hvis du vil: hvor lenge har dette vart, og hvordan begynte det?', type: 'textarea', sensitive: true, wide: true },
+    ],
+  },
+  {
+    title: 'Vaner og sovemiljø',
+    description: 'Svar bare på det som kjennes relevant. Opplysninger om medisiner og rusmidler er sensitive.',
+    fields: [
+      {
+        key: 'sleepAidUse',
+        label: 'Bruker du for tiden medisiner eller tilskudd for søvn?',
+        type: 'select',
+        choices: [['yes', 'Ja'], ['no', 'Nei'], ['unsure', 'Usikker']],
+        sensitive: true,
+      },
+      { key: 'sleepAidDetails', label: 'Hvis du ønsker: type og omtrent hvor ofte', type: 'textarea', sensitive: true },
+      { key: 'caffeineCups', label: 'Omtrent hvor mange kopper koffeinholdig drikke blir det daglig?', type: 'number', min: 0, max: 40, step: 0.5, unit: 'kopper', sensitive: false },
+      { key: 'lateCaffeineCups', label: 'Hvor mange av dem drikkes etter lunsj?', type: 'number', min: 0, max: 40, step: 0.5, unit: 'kopper', sensitive: false },
+      { key: 'eveningAlcohol', label: 'Hvor ofte drikker du alkohol om kvelden?', type: 'select', choices: [['never', 'Aldri'], ['sometimes', 'Av og til'], ['often', 'Ofte'], ['prefer-not', 'Ønsker ikke å svare']], sensitive: true },
+      { key: 'exerciseDays', label: 'Hvor mange dager i uken er du vanligvis fysisk aktiv?', type: 'number', min: 0, max: 7, unit: 'dager per uke', sensitive: false },
+      {
+        key: 'sleepEnvironment',
+        label: 'Hvilke beskrivelser passer best til soverommet ditt?',
+        type: 'multi',
+        choices: [['quiet', 'Stille'], ['dark', 'Mørkt'], ['comfortable-temperature', 'Behagelig temperatur'], ['comfortable-bed', 'God seng/madrass'], ['shared-room', 'Deler rom med noen']],
+        sensitive: false,
+        wide: true,
+      },
+      { key: 'beforeBedRoutine', label: 'Hvis du vil: hva pleier du å gjøre den siste timen før du forsøker å sove?', type: 'textarea', sensitive: false },
+      { key: 'awakeRoutine', label: 'Hvis du våkner og ikke får sove: hva pleier du å gjøre?', type: 'textarea', sensitive: false },
+    ],
+  },
+  {
+    title: 'Hverdagen og hva som hjelper',
+    description: 'Dine egne observasjoner kan være nyttige å ta med til en samtale med behandler.',
+    fields: [
+      { key: 'daytimeImpact', label: 'Hvor mye merker du søvnen i hverdagen (for eksempel energi, humør eller konsentrasjon)?', type: 'rating', sensitive: false },
+      { key: 'sleepConcern', label: 'Hvor mye uro eller bekymring gir søvnen deg?', type: 'rating', sensitive: true },
+      { key: 'worsensSleep', label: 'Hvis du vil: hva legger du merke til at gjør søvnen vanskeligere?', type: 'textarea', sensitive: true },
+      { key: 'improvesSleep', label: 'Hvis du vil: hva ser ut til å gjøre søvnen lettere?', type: 'textarea', sensitive: false },
+      { key: 'sleepCoping', label: 'Hva hjelper deg gjennom dagen etter en vanskelig natt?', type: 'textarea', sensitive: false },
+      { key: 'supportGoals', label: 'Hva ønsker du mest hjelp eller støtte med akkurat nå?', type: 'textarea', sensitive: true, wide: true },
+    ],
+  },
+  {
+    title: 'Helse og støtte',
+    description: 'Frivillige helseopplysninger. Ikke før inn navn, fødselsnummer eller andre direkte identifikatorer.',
+    fields: [
+      {
+        key: 'relatedSymptoms',
+        label: 'Er det andre søvnrelaterte forhold du ønsker å nevne?',
+        type: 'multi',
+        choices: [['snoring', 'Snorking eller pust som forstyrres'], ['legDiscomfort', 'Uro eller ubehag i beina'], ['sleepBehaviors', 'Uvanlige bevegelser eller handlinger i søvne'], ['daytimeSleepEpisodes', 'Uventet sterk søvnighet på dagtid'], ['reflux', 'Halsbrann eller sure oppstøt om natten']],
+        sensitive: true,
+        wide: true,
+      },
+      { key: 'healthConditions', label: 'Hvis du ønsker: helseforhold som kan være relevante', type: 'textarea', sensitive: true },
+      { key: 'currentMedicines', label: 'Hvis du ønsker: medisiner eller behandling du tror kan påvirke søvnen', type: 'textarea', sensitive: true },
+      { key: 'sleepCare', label: 'Har du fått, eller får du, støtte for søvn eller helse? (valgfritt)', type: 'textarea', sensitive: true, wide: true },
+    ],
+  },
+  {
+    title: 'Livssituasjon og overskudd',
+    description: 'Dette er ikke en psykisk helsetest. Du kan hoppe over disse spørsmålene.',
+    fields: [
+      { key: 'dailyStress', label: 'Hvordan oppleves den samlede belastningen i hverdagen for tiden?', type: 'rating', sensitive: true },
+      { key: 'lifeContext', label: 'Hvis du vil: er det noe i livssituasjonen din du ønsker å ta hensyn til?', type: 'textarea', sensitive: true, wide: true },
+    ],
+  },
+];
+const ASSESSMENT_FIELDS = ASSESSMENT_SECTIONS.flatMap((section) => section.fields);
+const ASSESSMENT_RATING_CHOICES = [['0', 'Ikke i det hele tatt'], ['1', 'Litt'], ['2', 'En del'], ['3', 'Mye']];
 const COFFEE_CUP_CAFFEINE_MG = 80;
 const today = new Date();
 const dateKey = (date) => {
@@ -99,8 +195,21 @@ function loadSettings() {
   }
 }
 
+function loadAssessment() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(ASSESSMENT_KEY) || 'null');
+    return saved && saved.version === 1 && saved.answers && typeof saved.answers === 'object' && !Array.isArray(saved.answers)
+      ? { version: 1, updatedAt: saved.updatedAt || null, answers: saved.answers }
+      : { version: 1, updatedAt: null, answers: {} };
+  } catch (error) {
+    console.error('Kunne ikke lese kartleggingssvarene fra lokal lagring.', error);
+    return { version: 1, updatedAt: null, answers: {} };
+  }
+}
+
 let entries = loadEntries();
 let settings = loadSettings();
+let assessment = loadAssessment();
 function loadActivity() {
   try {
     const saved = JSON.parse(localStorage.getItem(ACTIVITY_KEY) || 'null');
@@ -355,6 +464,7 @@ function renderDashboard() {
   document.querySelector('#light-count').textContent = `${daysWithLight} ${daysWithLight === 1 ? 'dag' : 'dager'}`;
   document.querySelector('#light-minutes').textContent = `${lightMinutes} min`;
   renderInsights(subset);
+  renderAssessmentInsights();
   renderDiary();
   renderTreatmentSummary();
   renderQuickState();
@@ -407,6 +517,375 @@ function renderInsights(subset) {
   renderChart(document.querySelector('#latency-chart'), subset.slice().reverse().map((entry) => ({
     value: durationBetween(entry.lightsOut, entry.sleepOnset) ?? 0, max: 60, label: shortDate(entry.date),
   })), '#6fc9be', 'innsovningstid');
+}
+
+function renderAssessmentForm() {
+  const container = document.querySelector('#assessment-questions');
+  container.innerHTML = ASSESSMENT_SECTIONS.map((section) => `
+    <section class="panel assessment-section">
+      <h2>${escapeHtml(section.title)}</h2>
+      <p>${escapeHtml(section.description)}</p>
+      <div class="assessment-fields">${section.fields.map((field) => {
+    const value = assessment.answers[field.key];
+    const sensitive = field.sensitive ? '<span class="assessment-sensitive">Valgfritt · sensitivt</span>' : '';
+    const hint = field.type === 'rating'
+      ? '<small class="assessment-hint">Velg det som passer best. Dette er ingen testskår.</small>'
+      : field.sensitive
+        ? '<small class="assessment-hint">Du kan hoppe over feltet eller la det stå tomt.</small>'
+        : '';
+    const fieldClass = `assessment-field${field.wide ? ' assessment-field-wide' : ''}`;
+
+    if (field.type === 'rating' || field.type === 'multi') {
+      const choices = field.type === 'rating' ? ASSESSMENT_RATING_CHOICES : field.choices;
+      const inputType = field.type === 'rating' ? 'radio' : 'checkbox';
+      const selectedValues = Array.isArray(value) ? value : [];
+      return `<div class="${fieldClass}"><fieldset><legend>${escapeHtml(field.label)} ${sensitive}</legend><div class="assessment-options">${choices.map(([choiceValue, choiceLabel]) => {
+        const selected = field.type === 'rating' ? String(value ?? '') === choiceValue : selectedValues.includes(choiceValue);
+        const id = `assessment-${field.key}-${choiceValue}`;
+        return `<label class="assessment-option" for="${id}"><input id="${id}" type="${inputType}" name="${field.key}" value="${escapeHtml(choiceValue)}" ${selected ? 'checked' : ''}><span>${escapeHtml(choiceLabel)}</span></label>`;
+      }).join('')}</div>${hint}</fieldset></div>`;
+    }
+
+    const controlId = `assessment-${field.key}`;
+    if (field.type === 'select') {
+      const options = field.choices.map(([choiceValue, choiceLabel]) => `<option value="${escapeHtml(choiceValue)}" ${value === choiceValue ? 'selected' : ''}>${escapeHtml(choiceLabel)}</option>`).join('');
+      return `<div class="${fieldClass}"><label for="${controlId}">${escapeHtml(field.label)} ${sensitive}</label><select id="${controlId}" name="${field.key}"><option value="">Velg (valgfritt)</option>${options}</select>${hint}</div>`;
+    }
+    if (field.type === 'textarea') {
+      return `<div class="${fieldClass}"><label for="${controlId}">${escapeHtml(field.label)} ${sensitive}</label><textarea id="${controlId}" name="${field.key}" rows="3" maxlength="2000">${escapeHtml(value || '')}</textarea>${hint}</div>`;
+    }
+    const numericAttributes = field.type === 'number'
+      ? `type="number" min="${field.min}" max="${field.max}" ${field.step ? `step="${field.step}"` : 'step="1"'} inputmode="${field.step && field.step !== 1 ? 'decimal' : 'numeric'}"`
+      : 'type="time"';
+    const numericValue = value === undefined ? '' : ` value="${escapeHtml(value)}"`;
+    const unit = field.unit ? `<small class="assessment-hint">${escapeHtml(field.unit)}</small>` : '';
+    return `<div class="${fieldClass}"><label for="${controlId}">${escapeHtml(field.label)} ${sensitive}</label><input class="assessment-input" id="${controlId}" name="${field.key}" ${numericAttributes}${numericValue}>${unit}${hint}</div>`;
+  }).join('')}</div>
+    </section>`).join('');
+}
+
+function assessmentAnswered(field) {
+  const value = assessment.answers[field.key];
+  return Array.isArray(value) ? value.length > 0 : value !== undefined && value !== null && String(value).trim() !== '';
+}
+
+function renderAssessmentProgress(saveFailed = false) {
+  const answered = ASSESSMENT_FIELDS.filter(assessmentAnswered).length;
+  const percent = Math.round(answered / ASSESSMENT_FIELDS.length * 100);
+  const bar = document.querySelector('.assessment-progress-track');
+  document.querySelector('#assessment-progress-label').textContent = `${answered} av ${ASSESSMENT_FIELDS.length} felt fylt ut`;
+  document.querySelector('#assessment-save-status').textContent = saveFailed
+    ? 'Kunne ikke lagres på enheten'
+    : assessment.updatedAt
+      ? `Lagret ${new Date(assessment.updatedAt).toLocaleString('nb-NO')}`
+      : 'Ingen svar lagret ennå';
+  document.querySelector('#assessment-progress-bar').style.width = `${percent}%`;
+  bar.setAttribute('aria-valuenow', String(percent));
+  document.querySelector('#export-assessment').disabled = answered === 0;
+  document.querySelector('#clear-assessment').disabled = answered === 0;
+}
+
+function renderAssessmentInsights() {
+  const target = document.querySelector('#assessment-insight-summary');
+  const answered = ASSESSMENT_FIELDS.filter(assessmentAnswered).length;
+  const actualEntries = isDemoData ? [] : getEntries(30);
+  if (!answered) {
+    target.innerHTML = '<p class="assessment-insight-empty">Fyll ut de relevante, valgfrie spørsmålene under Kartlegging og registrer noen netter i søvndagboken for å se om opplevelsen og registreringene sammenfaller.</p>';
+    return;
+  }
+  if (!actualEntries.length) {
+    target.innerHTML = '<p class="assessment-insight-empty">Du har fylt ut kartleggingen, men har ingen faktiske søvndagboknetter å sammenligne med ennå. Eksempeltall fra demoen brukes ikke i denne analysen. <button class="text-button" type="button" data-view-link="diary">Gå til søvndagboken</button></p>';
+    target.querySelector('[data-view-link]')?.addEventListener('click', () => setView('diary'));
+    return;
+  }
+
+  const numericAnswer = (key) => {
+    if (!assessmentAnswered({ key })) return null;
+    const value = Number(assessment.answers[key]);
+    return Number.isFinite(value) ? value : null;
+  };
+  const ratingLabel = (value) => ASSESSMENT_RATING_CHOICES.find(([choice]) => Number(choice) === value)?.[1] || 'ikke oppgitt';
+  const compare = ({ key, label, entries, valueFor, reported, differenceLimit, unit, diaryLabel = label, format = (value) => `${Math.round(value)} ${unit}` }) => {
+    const baseline = numericAnswer(key);
+    if (baseline === null) return null;
+    const valid = entries.map(valueFor).filter(Number.isFinite);
+    if (valid.length < 3) {
+      return {
+        label,
+        status: 'Flere netter trengs',
+        copy: `Kartleggingen: ${reported}. Dagboken har foreløpig ${valid.length} av minst 3 netter med registreringen «${diaryLabel}».`,
+        count: valid.length,
+      };
+    }
+    const observed = average(valid);
+    const difference = Math.abs(observed - baseline);
+    const status = difference <= differenceLimit ? 'Sammenfaller grovt' : 'Avviker fra anslaget';
+    return {
+      label,
+      status,
+      copy: `Kartleggingen: ${reported}. Dagboken: gjennomsnitt ${format(observed)} over ${valid.length} netter. Forskjell: ${format(difference)}.`,
+      count: valid.length,
+    };
+  };
+  const compareRating = ({ key, label, entries, valueFor, lowLimit, highLimit, diaryLabel }) => {
+    const rating = numericAnswer(key);
+    if (rating === null) return null;
+    const valid = entries.map(valueFor).filter(Number.isFinite);
+    if (valid.length < 3) {
+      return {
+        label,
+        status: 'Flere netter trengs',
+        copy: `Kartleggingen: «${ratingLabel(rating)}». Dagboken har foreløpig ${valid.length} av minst 3 netter med registreringen «${diaryLabel}».`,
+        count: valid.length,
+      };
+    }
+    const observed = average(valid);
+    const logSupportsLowImpact = observed <= lowLimit;
+    const logSupportsHighImpact = observed >= highLimit;
+    const selfReportsHighImpact = rating >= 2;
+    const status = logSupportsLowImpact && rating <= 1 || logSupportsHighImpact && selfReportsHighImpact
+      ? 'Sammenfaller grovt'
+      : logSupportsLowImpact && selfReportsHighImpact || logSupportsHighImpact && rating <= 1
+        ? 'Ulikt bilde'
+        : 'Ikke tydelig';
+    const range = `Dagboken viser ${Math.round(observed)} ${diaryLabel} i gjennomsnitt over ${valid.length} netter.`;
+    return {
+      label,
+      status,
+      copy: `Kartleggingen: «${ratingLabel(rating)}». ${range}`,
+      count: valid.length,
+    };
+  };
+  const compareClock = (key, label, property) => {
+    if (!assessmentAnswered({ key })) return null;
+    const baseline = timeMinutes(assessment.answers[key]);
+    if (baseline === null) return null;
+    const weekdayEntries = actualEntries.filter((entry) => {
+      const day = new Date(`${entry.date}T12:00:00`).getDay();
+      return day >= 1 && day <= 5 && timeMinutes(entry[property]) !== null;
+    });
+    if (weekdayEntries.length < 3) {
+      return {
+        label,
+        status: 'Flere netter trengs',
+        copy: `Kartleggingen: ${formatClock(assessment.answers[key])}. Dagboken har foreløpig ${weekdayEntries.length} av minst 3 ukedager med registrert klokkeslett.`,
+        count: weekdayEntries.length,
+      };
+    }
+    const radians = weekdayEntries.map((entry) => timeMinutes(entry[property]) * Math.PI / 720);
+    const meanSin = average(radians.map(Math.sin)) || 0;
+    const meanCos = average(radians.map(Math.cos)) || 0;
+    const diaryMinutes = (Math.atan2(meanSin, meanCos) * 720 / Math.PI + 1440) % 1440;
+    const difference = Math.abs(((diaryMinutes - baseline + 720 + 1440) % 1440) - 720);
+    const status = difference <= 45 ? 'Sammenfaller grovt' : difference >= 90 ? 'Avviker fra anslaget' : 'Delvis sammenfall';
+    const diaryClock = `${String(Math.floor(diaryMinutes / 60)).padStart(2, '0')}:${String(Math.round(diaryMinutes % 60)).padStart(2, '0')}`;
+    return {
+      label,
+      status,
+      copy: `Kartleggingen: ${formatClock(assessment.answers[key])}. Dagbokens gjennomsnitt på ukedager: ${formatClock(diaryClock)} (${weekdayEntries.length} netter). Avstand: ca. ${Math.round(difference)} min.`,
+      count: weekdayEntries.length,
+    };
+  };
+
+  const comparisons = [
+    compareRating({
+      key: 'fallingAsleepDifficulty',
+      label: 'Opplevd innsovningsvanske',
+      entries: actualEntries,
+      valueFor: (entry) => durationBetween(entry.lightsOut, entry.sleepOnset),
+      lowLimit: 20,
+      highLimit: 30,
+      diaryLabel: 'min før innsovning',
+    }),
+    compare({
+      key: 'sleepLatency',
+      label: 'Tid før innsovning',
+      entries: actualEntries,
+      valueFor: (entry) => durationBetween(entry.lightsOut, entry.sleepOnset),
+      reported: `${numericAnswer('sleepLatency')} min`,
+      differenceLimit: 20,
+      unit: 'min',
+      format: (value) => `${Math.round(value)} min`,
+    }),
+    compareRating({
+      key: 'nightWakingDifficulty',
+      label: 'Opplevde nattlige oppvåkninger',
+      entries: actualEntries,
+      valueFor: (entry) => Number(entry.awakeMinutes),
+      lowLimit: 20,
+      highLimit: 30,
+      diaryLabel: 'min våken om natten',
+    }),
+    compare({
+      key: 'nightAwakeMinutes',
+      label: 'Våken tid om natten',
+      entries: actualEntries,
+      valueFor: (entry) => Number(entry.awakeMinutes),
+      reported: `${numericAnswer('nightAwakeMinutes')} min`,
+      differenceLimit: 20,
+      unit: 'min',
+      format: (value) => `${Math.round(value)} min`,
+    }),
+    compare({
+      key: 'nightWakingCount',
+      label: 'Oppvåkninger',
+      entries: actualEntries,
+      valueFor: (entry) => Number(entry.awakenings),
+      reported: `${numericAnswer('nightWakingCount')} per natt`,
+      differenceLimit: 1,
+      unit: 'per natt',
+      format: (value) => `${value.toFixed(1)} per natt`,
+    }),
+    compare({
+      key: 'sleepDurationHours',
+      label: 'Søvnlengde',
+      entries: actualEntries,
+      valueFor: (entry) => {
+        const minutes = getSleepMinutes(entry);
+        return minutes === null ? null : minutes / 60;
+      },
+      reported: `${numericAnswer('sleepDurationHours')} t per natt`,
+      differenceLimit: 1,
+      unit: 't',
+      format: (value) => `${value.toFixed(1)} t per natt`,
+    }),
+    compareClock('weekdayBedtime', 'Leggetid på ukedager', 'bedtime'),
+    compareClock('weekdayWakeTime', 'Oppståtid på ukedager', 'riseTime'),
+  ].filter(Boolean);
+
+  const sleepiness = numericAnswer('daytimeSleepiness');
+  if (sleepiness !== null) {
+    const energyValues = actualEntries.map((entry) => Number(entry.energy)).filter((value) => Number.isFinite(value) && value >= 1 && value <= 5);
+    if (energyValues.length < 3) {
+      comparisons.push({
+        label: 'Søvnighet og energi',
+        status: 'Flere netter trengs',
+        copy: `Kartleggingen beskriver søvnighet som «${ratingLabel(sleepiness)}». Dagboken har foreløpig ${energyValues.length} av minst 3 energivurderinger.`,
+        count: energyValues.length,
+      });
+    } else {
+      const meanEnergy = average(energyValues);
+      const diaryIndicatesLowEnergy = meanEnergy <= 2.5;
+      const selfReportsSleepiness = sleepiness >= 2;
+      const aligns = diaryIndicatesLowEnergy === selfReportsSleepiness;
+      comparisons.push({
+        label: 'Søvnighet og energi',
+        status: aligns ? 'Sammenfaller grovt' : 'Ulikt bilde',
+        copy: `Kartleggingen beskriver søvnighet som «${ratingLabel(sleepiness)}». Dagbokens gjennomsnittlige energi er ${meanEnergy.toFixed(1)} av 5 over ${energyValues.length} netter.`,
+        count: energyValues.length,
+      });
+    }
+  }
+
+  const applicableComparisons = comparisons.filter(Boolean);
+  if (!applicableComparisons.length) {
+    target.innerHTML = '<p class="assessment-insight-empty">Du har registrert netter, men har foreløpig ikke svart på de numeriske søvnspørsmålene som kan sammenlignes direkte. Fritekstsvar og helseopplysninger vises ikke her.</p>';
+    return;
+  }
+  const cards = applicableComparisons.map((item) => `
+    <article class="assessment-comparison">
+      <div class="assessment-comparison-heading"><h3>${escapeHtml(item.label)}</h3><span class="${item.status === 'Sammenfaller grovt' ? 'assessment-status-match' : item.status === 'Avviker fra anslaget' || item.status === 'Ulikt bilde' ? 'assessment-status-different' : 'assessment-status-pending'}">${escapeHtml(item.status)}</span></div>
+      <p>${escapeHtml(item.copy)}</p>
+    </article>`).join('');
+  const firstDate = actualEntries[actualEntries.length - 1]?.date;
+  const lastDate = actualEntries[0]?.date;
+  const dateRange = firstDate && lastDate ? `${shortDate(firstDate)}–${shortDate(lastDate)}` : '';
+  target.innerHTML = `<div class="assessment-comparison-list">${cards}</div><p class="assessment-insight-meta">${actualEntries.length} registrerte netter fra de siste 30 dagene${dateRange ? ` (${escapeHtml(dateRange)})` : ''}. Bare besvarte tallspørsmål sammenholdes; fritekst og helseopplysninger vises ikke.</p>`;
+}
+
+function saveAssessment(next) {
+  assessment = next;
+  try {
+    localStorage.setItem(ASSESSMENT_KEY, JSON.stringify(next));
+    return true;
+  } catch (error) {
+    console.error('Kunne ikke lagre kartleggingssvarene lokalt.', error);
+    showToast('Svarene kunne ikke lagres på enheten. Kontroller lagringsplassen i nettleseren.');
+    return false;
+  }
+}
+
+function handleAssessmentInput(event) {
+  const input = event.target;
+  const field = input.closest('.assessment-field');
+  if (!field) return;
+  const key = field.querySelector('[name]')?.name;
+  const definition = ASSESSMENT_FIELDS.find((item) => item.key === key);
+  if (!definition) return;
+  if ((input.type === 'checkbox' || input.type === 'radio') && event.type === 'input') return;
+  if (input.type === 'number' && input.value !== '' && !input.validity.valid) {
+    document.querySelector('#assessment-save-status').textContent = 'Kontroller verdien før lagring';
+    return;
+  }
+
+  const answers = { ...assessment.answers };
+  if (definition.type === 'multi') {
+    const checked = [...field.querySelectorAll('input[type="checkbox"]:checked')].map((item) => item.value);
+    if (checked.length) answers[key] = checked;
+    else delete answers[key];
+  } else if (definition.type === 'rating') {
+    const selected = field.querySelector('input[type="radio"]:checked');
+    if (selected) answers[key] = selected.value;
+    else delete answers[key];
+  } else if (input.value.trim() === '') {
+    delete answers[key];
+  } else {
+    answers[key] = definition.type === 'number' ? input.valueAsNumber : input.value;
+  }
+
+  const next = { version: 1, updatedAt: new Date().toISOString(), answers };
+  const saved = saveAssessment(next);
+  renderAssessmentProgress(!saved);
+  renderAssessmentInsights();
+}
+
+function exportAssessment() {
+  const responses = ASSESSMENT_SECTIONS.flatMap((section) => section.fields
+    .filter(assessmentAnswered)
+    .map((field) => ({
+      section: section.title,
+      key: field.key,
+      question: field.label,
+      sensitive: field.sensitive,
+      answer: assessment.answers[field.key],
+    })));
+  if (!responses.length) {
+    showToast('Fyll ut minst ett felt før du eksporterer kartleggingen.');
+    return;
+  }
+  const data = {
+    questionnaire: 'Sov godt – egen kartlegging',
+    schemaVersion: 1,
+    exportedAt: new Date().toISOString(),
+    lastUpdated: assessment.updatedAt,
+    note: 'Egenrapporterte opplysninger. Ikke en validert test, diagnose eller behandlingsanbefaling.',
+    responses,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `sov-godt-kartlegging-${dateKey(today)}.json`;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  showToast('Kartleggingen er lastet ned som JSON. Eksportfilen kan inneholde sensitive opplysninger.');
+}
+
+function clearAssessment() {
+  if (!window.confirm('Slette alle kartleggingssvar fra denne nettleseren? Dette kan ikke angres.')) return;
+  try {
+    localStorage.removeItem(ASSESSMENT_KEY);
+    assessment = { version: 1, updatedAt: null, answers: {} };
+    renderAssessmentForm();
+    renderAssessmentProgress();
+    renderAssessmentInsights();
+    showToast('Kartleggingssvarene er slettet fra denne enheten.');
+  } catch (error) {
+    console.error('Kunne ikke slette kartleggingssvarene.', error);
+    showToast('Kartleggingssvarene kunne ikke slettes. Prøv igjen fra denne nettleseren.');
+  }
 }
 
 function setView(view) {
@@ -753,9 +1232,19 @@ function openIntakeAmount(eventId) {
   showToast('Mengden er lagt til.');
 }
 
+renderAssessmentForm();
+renderAssessmentProgress();
+renderAssessmentInsights();
 document.querySelector('#today-label').textContent = today.toLocaleDateString('nb-NO', { weekday: 'long', day: 'numeric', month: 'long' });
 document.querySelectorAll('[data-view]').forEach((button) => button.addEventListener('click', () => setView(button.dataset.view)));
 document.querySelectorAll('[data-view-link]').forEach((button) => button.addEventListener('click', () => setView(button.dataset.viewLink)));
+const assessmentForm = document.querySelector('#assessment-form');
+assessmentForm.addEventListener('input', handleAssessmentInput);
+assessmentForm.addEventListener('change', (event) => {
+  if (event.target.matches('input[type="checkbox"], input[type="radio"]')) handleAssessmentInput(event);
+});
+document.querySelector('#export-assessment').addEventListener('click', exportAssessment);
+document.querySelector('#clear-assessment').addEventListener('click', clearAssessment);
 document.querySelectorAll('[data-open-log]').forEach((button) => button.addEventListener('click', () => openLog()));
 document.querySelectorAll('[data-open-treatment]').forEach((button) => button.addEventListener('click', () => {
   updateProfileDialog();
